@@ -1,0 +1,109 @@
+\subsection{Note on a Corrected Evaluation Pipeline}
+
+An earlier version of this evaluation pipeline contained two bugs,
+corrected prior to the results reported in Section~\ref{sec:results}.
+First, the closed/open answer-type label was read from a field that does
+not exist on the Hugging Face mirror of VQA-RAD used here, causing every
+example to be silently mislabeled open-ended and closed-question accuracy
+to be permanently reported as 0.0000. Second, the evaluation set was
+constructed by internally re-splitting VQA-RAD's official training
+portion (yielding a 180-example test set) rather than using VQA-RAD's
+own official 451-example held-out test split, which is what other
+published VQA-RAD baselines evaluate against. Both are fixed in the
+pipeline this paper's numbers are drawn from: answer type is recovered
+from the answer text (Section~\ref{sec:datasets}), and the official test
+split is used directly. We document this correction explicitly, rather
+than silently revising the numbers, in the interest of transparent
+research practice.
+
+\subsection{Dataset Scope}
+
+Both datasets used here are deliberately non-credentialed
+(Section~\ref{sec:datasets}), which was necessary for a timeline-constrained
+project but has real consequences for generalizability. VQA-RAD's test
+split is small (on the order of a few hundred examples), which is why
+Section~\ref{sec:experimental_setup} treats statistical significance as a
+requirement rather than an optional check, but a small test split also
+limits the granularity of any subgroup analysis (e.g.\ by modality or
+anatomical region) that a larger benchmark would support. ROCOv2's captions
+are figure captions drawn from published literature, not full clinical
+reports, and are English-only; neither dataset was designed as a matched
+pair, so the retrieval corpus and evaluation benchmark may differ somewhat
+in imaging style, patient population, or reporting convention.
+MIMIC-CXR, the credentialed dataset most published medical VLM work uses,
+is a natural extension once credentialed access is obtained
+(Section~\ref{sec:conclusion}).
+
+\subsection{Retriever Design}
+
+The retriever embeds and matches only the query \emph{image}: the CLIP
+image encoder retrieves corpus entries by visual similarity alone, and the
+VQA question text never participates in retrieval (Section~\ref{sec:method}).
+As discussed in Section~\ref{sec:discussion}, this is a plausible
+alternative explanation (alongside evidence dilution) for why accuracy
+declines as $k$ increases -- a question-aware or cross-modal retriever,
+which this work does not implement, could retrieve evidence relevant to
+what is specifically being asked rather than only to what the image
+visually resembles. The retriever also uses a single, off-the-shelf CLIP
+checkpoint (\texttt{openai/clip-vit-base-patch32}) trained on
+general-domain web images, not fine-tuned on medical imagery specifically.
+Whether a medical-domain-adapted image encoder would retrieve more
+clinically relevant evidence, and thereby change the retrieval-augmented
+result, is untested here. Likewise, only an exact flat inner-product index
+is used; this is an appropriate, deliberate choice at ROCOv2's corpus scale
+($\sim$90K vectors, Section~\ref{sec:method}) but would not scale without
+revisiting approximate indexing (IVF/HNSW) at a larger corpus size, and the
+top-$k$ sweep in Section~\ref{sec:results} covers only a handful of
+discrete values, not a continuous sensitivity analysis.
+
+\subsection{Evaluation Methodology}
+
+Closed-question accuracy in this paper relies on an answer-type label
+recovered from the answer text (Section~\ref{sec:datasets}: a normalized
+answer of exactly ``yes'' or ``no'' is treated as closed-ended), since
+the VQA-RAD mirror used here does not expose the original annotation.
+This recovers the large majority of the true closed/open split but will
+mislabel a small number of closed-ended, non-yes/no questions as
+open-ended; the reported closed-question accuracy should be read with
+this approximation in mind. Open-ended question scoring relies on
+BLEU-4 and ROUGE-L, both surface n-gram overlap metrics that can penalize
+a correct answer phrased differently from the reference and, conversely,
+reward superficial lexical overlap without semantic correctness. BLEU-4
+in particular is close to structurally uninformative at VQA-RAD's typical
+open-ended answer length (often 3--4 tokens): even two identical strings
+can score well below 1.0 under BLEU-4 with smoothing, since a short
+answer offers few or no 4-gram matches regardless of correctness; the
+BLEU-4 deltas reported in Section~\ref{sec:results} should be weighted
+accordingly relative to ROUGE-L and exact match. The 0.5 ROUGE-L
+threshold used to bucket open-ended examples into
+\emph{improved}/\emph{regressed} categories for qualitative review
+(Section~\ref{sec:experimental_setup}) is a convenience heuristic for
+categorization, not a validated correctness threshold, and is not used
+anywhere in the headline reported metrics. No clinician review of model
+answers for clinical adequacy (as opposed to lexical match against a
+reference) was performed; this is a meaningful gap between what this
+evaluation measures and what would be required before any claim of
+clinical utility.
+
+\subsection{Compute Constraints}
+
+As a resource-constrained, timeline-bound project, this work evaluates a
+single baseline checkpoint family
+(\texttt{Salesforce/blip2-opt-2.7b}, with
+\texttt{microsoft/llava-med-v1.5-mistral-7b} as an alternate candidate) at
+a single scale, rather than an ablation across multiple model sizes or
+architectures. Similarly, only one prompt template
+(\texttt{configs/model\_config.yaml}'s \texttt{rag.evidence\_instruction})
+was used for the retrieval-augmented condition; prompt phrasing is known in
+the broader RAG literature to affect how well a model makes use of
+retrieved context, and this was not itself an experimental variable here.
+
+\subsection{Scope of Claims}
+
+This is a research prototype intended to answer a narrow empirical
+question --- does retrieval augmentation change VLM accuracy on a specific
+medical VQA benchmark, under one model and retriever configuration --- and
+is explicitly not a validated diagnostic or clinical decision-support tool.
+Any result reported in Section~\ref{sec:results} should be read as evidence
+about this specific pipeline and benchmark, not as a general claim about
+retrieval-augmented medical VLMs as a class.

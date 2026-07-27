@@ -1,0 +1,42 @@
+This paper presented a controlled comparison between a vision-language
+model answering medical visual questions from its parameters alone and the
+same model prompted with evidence retrieved from a CLIP-embedded FAISS
+index over the ROCOv2 corpus, built entirely on openly licensed,
+non-credentialed data and evaluated on VQA-RAD's official held-out test
+split with paired statistical significance testing. Retrieval augmentation
+produced a consistent, direction-positive improvement over the
+non-augmented baseline on all reported metrics at $k=5$ (closed-question
+accuracy +4.8 points, overall exact match +2.7 points), but a paired
+bootstrap test found neither improvement statistically significant at
+$\alpha = 0.05$ (closed-question exact match: $p = 0.1848$, 95\% CI
+$[-0.020, 0.116]$; open-question ROUGE-L: $p = 0.9642$, 95\% CI
+$[-0.032, 0.033]$; $n = 451$). A secondary finding from the top-$k$ sweep
+--- that closed-question accuracy is highest at $k=1$ and degrades
+monotonically as more evidence is retrieved --- suggests that, for this
+baseline checkpoint, retrieval depth introduces a trade-off between
+evidence coverage and prompt noise that is at least as important as the
+presence of retrieval itself.
+
+\subsection{Future Work}
+
+Four extensions follow directly from the limitations in
+Section~\ref{sec:limitations}. First, extending the retrieval corpus to
+include MIMIC-CXR once credentialed access is obtained would test whether
+this paper's finding holds on a corpus of matched clinical reports rather
+than figure captions, and at substantially larger scale. Second, a
+medical-domain-adapted image encoder in place of general-domain CLIP could
+be evaluated as a retriever, to isolate whether retrieval quality itself
+was a limiting factor. Third, a question-aware or cross-modal retriever
+-- one that embeds the question text alongside the query image, rather
+than the image alone -- could disentangle whether the top-$k$ sweep's
+declining accuracy reflects evidence dilution, retrieval irrelevance, or
+both. Fourth, a small clinician review of a sample of model answers ---
+assessing clinical adequacy rather than lexical overlap with a reference
+answer --- would address the gap between this paper's automatic metrics
+and any claim of clinical utility, and is a necessary step before this
+pipeline could inform any real decision-support use case.
+
+The complete, tested, config-driven codebase for this pipeline --- dataset
+acquisition, baseline and retrieval-augmented models, significance testing
+and error analysis, and a FastAPI deployment --- is released alongside this
+paper to support exactly these extensions.

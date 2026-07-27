@@ -1,0 +1,54 @@
+Vision-language models (VLMs) that answer free-text questions about images
+have progressed rapidly on general-domain benchmarks, driven by large-scale
+image-text pretraining~\cite{radford2021clip} and efficient adaptation of
+frozen encoders and language models~\cite{li2023blip2}. Applying these
+models to medical imaging is attractive: a system that can answer a
+clinician's question about a chest radiograph or CT slice could support
+triage, education, and second-opinion workflows. However, general-domain
+VLMs are trained overwhelmingly on natural images and web-scale captions,
+and even biomedical-specific variants~\cite{li2023llavamed} are trained on
+a fixed snapshot of literature and cannot cite the specific evidence behind
+a given answer. An answer generated purely from a model's parameters is
+difficult to audit: a clinician evaluating the system's output has no way
+to inspect what, if anything, the model's answer was based on.
+
+Retrieval-augmented generation (RAG) offers one route to addressing this.
+Originally proposed for knowledge-intensive text tasks~\cite{lewis2020rag},
+RAG couples a parametric generator with a non-parametric memory: instead of
+answering from weights alone, the model is given retrieved supporting
+evidence and conditions its answer on that evidence. In principle this
+offers two benefits for medical VQA specifically: (1) the retrieved
+evidence is inspectable, giving a clinician something concrete to check the
+answer against, and (2) the model may produce more accurate answers by
+grounding its response in similar, verified cases rather than relying
+solely on what it memorized during pretraining.
+
+Whether retrieval augmentation actually improves accuracy on medical VQA,
+however, is an empirical question, not a foregone conclusion. Retrieved
+evidence could just as easily distract a model, dilute its attention across
+irrelevant content, or be ignored outright if the model was never trained
+to make use of retrieved context. Answering this question rigorously
+requires a controlled comparison: the same base model, the same test
+questions, the same generation parameters, differing only in whether
+retrieved evidence is present in the prompt.
+
+\subsection{Contributions}
+
+This paper makes three contributions:
+
+\begin{enumerate}
+  \item An open, reproducible pipeline for retrieval-augmented medical VQA
+        built entirely on openly licensed, non-credentialed datasets ---
+        ROCOv2~\cite{ruckert2024rocov2} as the retrieval corpus and
+        VQA-RAD~\cite{lau2018vqarad} as the evaluation benchmark --- so
+        the full pipeline can be reproduced without a data use agreement.
+  \item A controlled empirical comparison of a vision-language model with
+        and without retrieved evidence, using the same checkpoint,
+        generation parameters, and scoring code for both conditions
+        (Section~\ref{sec:method}), evaluated with both standard automatic
+        metrics and paired statistical significance testing
+        (Section~\ref{sec:experimental_setup}).
+  \item A documented, config-driven, tested codebase intended to be
+        extensible to larger or credentialed corpora (e.g., MIMIC-CXR) in
+        future work, released alongside this paper.
+\end{enumerate}

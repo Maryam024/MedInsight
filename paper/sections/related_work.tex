@@ -1,0 +1,72 @@
+\subsection{Vision-Language Models}
+
+Contrastive image-text pretraining, exemplified by
+CLIP~\cite{radford2021clip}, learns a shared embedding space for images and
+text from large-scale web data without task-specific labels, and underlies
+the image encoder used in this work's retriever
+(Section~\ref{sec:method}). Building on such encoders, generative
+vision-language models couple a frozen or lightly-adapted vision encoder
+with a large language model to produce free-text answers conditioned on an
+image. BLIP-2~\cite{li2023blip2} bridges a frozen image encoder and a
+frozen language model with a lightweight Querying Transformer, substantially
+reducing the number of trainable parameters relative to end-to-end
+pretraining. LLaVA~\cite{liu2023llava} instead couples a vision encoder to
+a language model through visual instruction tuning on
+model-generated instruction-following data. This project's baseline VLM
+(Section~\ref{sec:method}) is drawn from this family of pretrained,
+general-domain checkpoints.
+
+\subsection{Medical Vision-Language Models}
+
+General-domain VLMs transfer imperfectly to medical imaging, where visual
+patterns, terminology, and the stakes of an incorrect answer all differ
+from natural-image domains. LLaVA-Med~\cite{li2023llavamed} adapts the
+LLaVA recipe to biomedicine, continuing training on figure-caption pairs
+drawn from PubMed Central and biomedical instruction-following data
+generated with the assistance of a large language model, and reports
+improvements over general-domain VLMs on medical visual question answering.
+This line of work establishes that domain adaptation helps, but the
+resulting models still answer purely from their trained parameters at
+inference time --- they do not retrieve or cite supporting evidence for a
+specific query, which is the gap this paper's retrieval-augmented condition
+addresses.
+
+\subsection{Retrieval-Augmented Generation}
+
+Retrieval-augmented generation was introduced for knowledge-intensive
+text tasks~\cite{lewis2020rag}, combining a pretrained sequence-to-sequence
+generator with a dense vector index over a non-parametric corpus, retrieved
+via maximum inner-product search. The approach's central premise ---
+grounding generation in retrieved, inspectable evidence rather than relying
+solely on parametric memory --- transfers naturally to a setting where
+evidence is diagnostically meaningful and open to human review, as in
+medical imaging. Efficient large-scale nearest-neighbor search over dense
+embeddings, which the retrieval side of this pipeline depends on, is
+provided by FAISS~\cite{johnson2019faiss}, used here as an in-process
+CPU-based flat inner-product index (Section~\ref{sec:method}) appropriate
+for a corpus of ROCOv2's scale.
+
+\subsection{Medical VQA Benchmarks}
+
+VQA-RAD~\cite{lau2018vqarad} is the first manually constructed medical VQA
+dataset in which clinicians posed naturally occurring questions about
+radiology images and supplied reference answers, spanning both closed-ended
+(yes/no-style) and open-ended free-text questions across CT, MRI, and X-ray
+studies. Its clinician-authored, non-synthetic questions and small,
+well-defined test split make it a natural fit for the retrieval-augmented
+comparison in this paper, at the cost of a test-split size small enough to
+require explicit statistical significance testing
+(Section~\ref{sec:experimental_setup}) before treating any accuracy delta
+as reliable.
+
+\subsection{Positioning of This Work}
+
+Prior work has separately established that (a) domain-adapted VLMs
+outperform general-domain VLMs on medical VQA~\cite{li2023llavamed}, and
+(b) retrieval augmentation improves knowledge-intensive text generation in
+non-medical settings~\cite{lewis2020rag}. This paper combines these two
+threads directly: rather than adapting a model's weights to the medical
+domain, it tests whether providing retrieved medical evidence \emph{at
+inference time}, to an otherwise unmodified VLM, produces a measurable
+accuracy improvement on medical VQA --- and, if so, where that improvement
+does and does not appear (Section~\ref{sec:discussion}).

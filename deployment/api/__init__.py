@@ -1,0 +1,1 @@
+"""MedInsight FastAPI serving application."""

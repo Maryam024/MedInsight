@@ -1,0 +1,31 @@
+vision_language_model:
+  baseline_name: "Salesforce/blip2-opt-2.7b"    
+  candidates:
+    - "Salesforce/blip2-opt-2.7b"
+    - "microsoft/llava-med-v1.5-mistral-7b"
+  freeze_vision_encoder: true
+  freeze_language_model: false
+
+retriever:
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"   # text encoder 
+  image_encoder: "openai/clip-vit-base-patch32"                 # image encoder
+  index_type: "flat_ip"        # FAISS flat inner-product index 
+  top_k: 5
+
+rag:
+  evidence_instruction: >
+    You are given reference findings from similar radiology images. Use them
+    only if relevant to answer the question about the new image.
+  max_caption_words_in_prompt: 60   
+
+generation:
+  max_new_tokens: 128
+  temperature: 0.2
+  do_sample: false            
+
+training:
+  batch_size: 8
+  learning_rate: 2.0e-5
+  num_epochs: 5
+  gradient_accumulation_steps: 4
+  warmup_ratio: 0.03

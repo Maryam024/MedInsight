@@ -1,0 +1,9 @@
+{
+  "num_examples": 451,
+  "num_closed": 251,
+  "num_open": 200,
+  "closed_accuracy": 0.47808764940239046,
+  "open_bleu": 0.03892918169255693,
+  "open_rouge_l": 0.1427922077922078,
+  "overall_exact_match": 0.29490022172949004
+}

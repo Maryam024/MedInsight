@@ -1,0 +1,80 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Environment variables / secrets ---
+.env
+.env.*
+*.key
+secrets.yaml
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Data (never commit raw medical data or large derived files) ---
+data/raw/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# --- Model weights / checkpoints (too large for git, track via DVC/W&B instead) ---
+*.pt
+*.pth
+*.bin
+*.safetensors
+checkpoints/
+models/*.ckpt
+
+# --- Vector index / retrieval artifacts ---
+*.faiss
+*.index
+
+# --- Experiment tracking ---
+experiments/logs/*
+!experiments/logs/.gitkeep
+!experiments/logs/baseline_metrics.json
+!experiments/logs/rag_metrics.json
+!experiments/logs/topk_sweep.json
+wandb/
+mlruns/
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# --- Testing / coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Docker ---
+*.log
+
+# --- Paper build artifacts ---
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.pdf.sync*
