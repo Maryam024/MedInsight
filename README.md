@@ -5,6 +5,7 @@
 <p align="center">
 
 <img src="https://img.shields.io/badge/Research-Medical%20AI-blue?style=for-the-badge">
+<img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi">
 <img src="https://img.shields.io/badge/Task-Medical%20VQA-green?style=for-the-badge">
 <img src="https://img.shields.io/badge/Framework-PyTorch-red?style=for-the-badge">
 <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge">
