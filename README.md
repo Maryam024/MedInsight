@@ -1,212 +1,404 @@
-# MedInsight
+# 🩺 MedInsight
 
-**Evaluating Retrieval-Augmented Vision-Language Models for Evidence-Grounded Medical Image Understanding**
+## Evaluating Retrieval-Augmented Vision-Language Models for Evidence-Grounded Medical Image Understanding
 
-MedInsight is a research project that investigates whether retrieval augmentation improves the performance of vision-language models (VLMs) on medical visual question answering (VQA). The system retrieves relevant radiology image-caption pairs from a FAISS index and uses them as supporting evidence during answer generation.
+<p align="center">
 
-> **Note:** This project is intended for research purposes only and is **not** a clinical decision-support system.
+<img src="https://img.shields.io/badge/Research-Medical%20AI-blue?style=for-the-badge">
+<img src="https://img.shields.io/badge/Task-Medical%20VQA-green?style=for-the-badge">
+<img src="https://img.shields.io/badge/Framework-PyTorch-red?style=for-the-badge">
+<img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge">
+
+</p>
+
+
+<p align="center">
+A research framework exploring whether <b>retrieval augmentation</b> improves the factual grounding and reliability of Vision-Language Models for medical image understanding.
+</p>
+
 
 ---
 
-## Features
+# 📌 Overview
 
-- Retrieval-augmented medical VQA pipeline
-- Baseline and RAG model comparison
-- CLIP-based image retrieval with FAISS
-- Automated evaluation and benchmarking
-- FastAPI deployment
-- IEEE-format research paper
+MedInsight investigates whether Retrieval-Augmented Generation (RAG) can improve medical Vision-Language Models (VLMs) by providing relevant external evidence during answer generation.
+
+The pipeline retrieves clinically relevant image-caption pairs from a radiology knowledge base using **CLIP embeddings + FAISS**, then provides retrieved evidence to a **BLIP-2 based VLM** for medical visual question answering.
+
+> ⚠️ This project is developed strictly for research purposes.  
+> It is **not a clinical decision-support system** and should not be used for medical diagnosis.
+
 
 ---
 
-## System Architecture
+# ✨ Key Features
+
+✅ Retrieval-Augmented Medical VQA Pipeline  
+   
+✅ Baseline vs RAG Performance Comparison  
+
+✅ CLIP-based Medical Image Retrieval  
+
+✅ FAISS Vector Database Integration  
+
+✅ Evidence-grounded Answer Generation  
+
+✅ Automated Evaluation Pipeline  
+
+✅ Statistical Significance Testing  
+
+✅ FastAPI Deployment Support  
+
+✅ IEEE-format Research Paper  
+
+
+---
+
+# 🏗️ System Architecture
+
 
 ```text
-Medical Image + Question
-           │
-           ▼
-   CLIP Image Encoder
-           │
-           ▼
-      FAISS Retrieval
-           │
-           ▼
- Retrieved Image-Caption Pairs
-           │
-           ▼
-   Prompt Construction
-           │
-           ▼
-      BLIP-2 Model
-           │
-           ▼
- Generated Answer + Evidence
+                 Medical Image
+                      +
+                  Question
+                      │
+                      ▼
+
+             CLIP Image Encoder
+
+                      │
+
+                      ▼
+
+              FAISS Retrieval Index
+
+                      │
+
+                      ▼
+
+       Relevant Radiology Image-Caption Pairs
+
+                      │
+
+                      ▼
+
+             Evidence Prompt Builder
+
+                      │
+
+                      ▼
+
+                  BLIP-2 VLM
+
+                      │
+
+                      ▼
+
+          Answer + Retrieved Evidence
 ```
 
-A detailed description of the pipeline is available in `docs/architecture.md`.
+
+Detailed architecture:
+
+```
+docs/architecture.md
+```
+
 
 ---
 
-## Repository Structure
+# 📂 Repository Structure
+
 
 ```text
 MedInsight/
-├── configs/
-├── data/
-├── deployment/
-├── docker/
-├── docs/
-├── experiments/
-├── notebooks/
-├── paper/
-├── scripts/
-├── src/
-├── tests/
+│
+├── configs/              # Configuration files
+├── data/                 # Dataset utilities
+├── deployment/           # FastAPI deployment
+├── docker/               # Docker configuration
+├── docs/                 # Documentation
+├── experiments/          # Experiment logs
+├── notebooks/            # Research notebooks
+├── paper/                # IEEE paper files
+├── scripts/              # Experiment scripts
+├── src/                  # Core implementation
+├── tests/                # Unit tests
+│
 ├── requirements.txt
-├── LICENSE
-└── README.md
+├── README.md
+└── LICENSE
 ```
+
 
 ---
 
-## Installation
+# 🚀 Installation
+
+
+## Clone Repository
 
 ```bash
 git clone https://github.com/Maryam024/MedInsight.git
+
 cd MedInsight
+```
 
+
+## Create Environment
+
+```bash
 python -m venv venv
+```
 
-# Linux/macOS
-source venv/bin/activate
 
-# Windows
+Activate:
+
+
+### Windows
+
+```bash
 venv\Scripts\activate
+```
 
+
+### Linux/macOS
+
+```bash
+source venv/bin/activate
+```
+
+
+Install dependencies:
+
+
+```bash
 pip install -r requirements.txt
 ```
 
+
 ---
 
-## Quick Start
+# ⚡ Quick Start
 
-Run the complete pipeline:
+
+## 1. Download datasets
 
 ```bash
-# Download datasets
 python scripts/download_data.py --dataset all
-
-# Exploratory data analysis
-python scripts/run_eda.py
-
-# Build the retrieval index
-python scripts/build_index.py
-
-# Evaluate baseline model
-python scripts/run_baseline.py
-
-# Evaluate retrieval-augmented model
-python scripts/run_rag_eval.py
-
-# Run additional experiments
-python scripts/run_experiments.py --top-k-values 1 3 5 10
-
-# Generate experiment report
-python scripts/generate_report.py
-
-# Generate LaTeX tables for the paper
-python scripts/generate_paper_results.py
 ```
 
+
+## 2. Run exploratory analysis
+
+```bash
+python scripts/run_eda.py
+```
+
+
+## 3. Build retrieval index
+
+```bash
+python scripts/build_index.py
+```
+
+
+## 4. Evaluate baseline model
+
+```bash
+python scripts/run_baseline.py
+```
+
+
+## 5. Evaluate RAG model
+
+```bash
+python scripts/run_rag_eval.py
+```
+
+
+## 6. Run retrieval experiments
+
+```bash
+python scripts/run_experiments.py --top-k-values 1 3 5 10
+```
+
+
+## 7. Generate reports
+
+```bash
+python scripts/generate_report.py
+```
+
+
 ---
 
-## Datasets
+# 📊 Datasets
+
 
 | Purpose | Dataset |
-|---------|---------|
-| Retrieval Corpus | ROCOv2 |
-| Evaluation Benchmark | VQA-RAD |
+|---|---|
+| Retrieval Knowledge Base | ROCOv2 |
+| Medical VQA Evaluation | VQA-RAD |
 
-See `docs/dataset.md` for dataset details and licensing information.
+
+Dataset documentation:
+
+```
+docs/dataset.md
+```
+
 
 ---
 
-## Evaluation
+# 📈 Evaluation Metrics
 
-The models are evaluated using:
 
-- Exact Match Accuracy
-- BLEU-4
-- ROUGE-L
-- Bootstrap Statistical Significance
-- Retrieval Quality Analysis
-- Error Analysis
+MedInsight evaluates:
 
-Generated reports are saved in:
+| Category | Metrics |
+|-|-|
+| Answer Quality | Exact Match, BLEU-4, ROUGE-L |
+| Retrieval | Retrieval relevance analysis |
+| Reliability | Bootstrap significance testing |
+| Error Analysis | Failure case investigation |
 
-```text
+
+Experiment results:
+
+```
 docs/experiments_findings.md
 ```
 
+
 ---
 
-## API
+# 🌐 API Deployment
 
-Launch the FastAPI server:
+
+Start FastAPI server:
+
 
 ```bash
 uvicorn deployment.api.main:app --reload
 ```
 
-Interactive API documentation:
+
+Open interactive documentation:
+
 
 ```
 http://localhost:8000/docs
 ```
 
+
 ---
 
-## Testing
+# 🧪 Testing
 
-Run all unit tests:
+
+Run:
+
 
 ```bash
 pytest tests -v
 ```
 
----
-
-## Documentation
-
-Additional documentation is available in the `docs/` directory:
-
-- `architecture.md`
-- `dataset.md`
-- `eda_findings.md`
-- `experiments_findings.md`
 
 ---
 
-## Paper
+# 📄 Research Paper
 
-The IEEE-format research paper is available in the `paper/` directory.
 
-To regenerate the experimental results used in the paper:
+The complete IEEE-format paper is available:
+
+
+```
+paper/MedInsight.pdf
+```
+
+
+Regenerate paper results:
+
 
 ```bash
 python scripts/generate_paper_results.py
 ```
 
----
-
-## License
-
-This project is licensed under the MIT License. The datasets used by this project (e.g., ROCOv2 and VQA-RAD) are distributed under their own licenses and are **not** included in this repository.
 
 ---
 
-## Author
+# 🔬 Research Contribution
 
-**Maryam Zaheer**  
+
+MedInsight explores:
+
+- Whether retrieval augmentation improves medical VLM grounding
+- Whether retrieved evidence reduces unsupported answers
+- How retrieval quality affects medical reasoning performance
+
+
+---
+
+# ⚠️ Limitations
+
+
+Current limitations include:
+
+- Research-scale evaluation datasets
+- Dependence on pretrained VLM capabilities
+- No clinical validation
+- Not intended for real-world diagnosis
+
+
+---
+
+# 📚 Documentation
+
+
+Available documentation:
+
+
+| File | Description |
+|-|-|
+| architecture.md | System design |
+| dataset.md | Dataset details |
+| eda_findings.md | Exploratory analysis |
+| experiments_findings.md | Experimental results |
+
+
+---
+
+# 📜 License
+
+
+MIT License
+
+
+Datasets such as ROCOv2 and VQA-RAD follow their own licensing terms and are not included.
+
+
+---
+
+# 👩‍💻 Author
+
+
+**Maryam Zaheer**
+
 BS Computer Science  
 University of Engineering and Technology (UET) Lahore
+
+
+Research Interests:
+
+- Medical AI
+- Vision-Language Models
+- Retrieval-Augmented Generation
+- Multimodal Learning
+
+
+---
+
+<p align="center">
+⭐ If you find this research useful, consider starring the repository.
+</p>
