@@ -242,7 +242,7 @@ python scripts/generate_report.py
 | Medical VQA Evaluation | VQA-RAD |
 
 
-Dataset documentation:
+Dataset documentation :
 
 ```
 docs/dataset.md
