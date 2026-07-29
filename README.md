@@ -56,47 +56,13 @@ The pipeline retrieves clinically relevant image-caption pairs from a radiology 
 
 # 🏗️ System Architecture
 
+<p align="center">
+  <img src="docs/images/architecture.png" alt="MedInsight Architecture" width="900">
+</p>
 
-```text
-                 Medical Image
-                      +
-                  Question
-                      │
-                      ▼
+The MedInsight pipeline first encodes the input medical image using CLIP and retrieves clinically relevant image-caption pairs from a FAISS index. Retrieved evidence is incorporated into the prompt and passed to BLIP-2, which generates evidence-grounded answers. Performance is then compared against a baseline VLM without retrieval augmentation.
 
-             CLIP Image Encoder
-
-                      │
-
-                      ▼
-
-              FAISS Retrieval Index
-
-                      │
-
-                      ▼
-
-       Relevant Radiology Image-Caption Pairs
-
-                      │
-
-                      ▼
-
-             Evidence Prompt Builder
-
-                      │
-
-                      ▼
-
-                  BLIP-2 VLM
-
-                      │
-
-                      ▼
-
-          Answer + Retrieved Evidence
-```
-
+For a detailed explanation, see:
 
 Detailed architecture:
 
