@@ -45,6 +45,7 @@ Raw datasets are **not included** in this repository. They can be downloaded aut
 ```bash
 python scripts/download_data.py --dataset all
 python scripts/run_eda.py
+
 ```
 
 Dataset statistics and exploratory analysis are written to:
