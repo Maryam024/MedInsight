@@ -1,0 +1,28 @@
+This paper investigates whether retrieval-augmented prompting
+improves vision-language model (VLM) accuracy on medical
+visual question answering (VQA), using only openly licensed,
+non-credentialed data. We build a CLIP-embedded FAISS
+retrieval index over the ROCOv2 radiology corpus (approximately
+90{,}000 image-caption pairs) and use it to supply retrieved
+evidence captions to a pretrained BLIP-2 vision-language model,
+comparing this retrieval-augmented condition against the same
+model answering with no retrieved evidence. Both conditions
+share identical tokenization, decoding parameters, and scoring
+code, differing only in prompt content, and are evaluated on the
+official VQA-RAD held-out test split (451 examples: 251
+closed-ended, 200 open-ended) using BLEU-4, ROUGE-L, and exact
+match, together with paired bootstrap significance testing.
+Retrieval augmentation improved every reported metric at the
+default retrieval depth ($k=5$), with closed-question accuracy
+rising from 43.0\% to 47.8\% and overall exact match from
+26.8\% to 29.5\%; however, neither improvement was statistically
+significant (closed-question exact match: $p=0.1848$, 95\% CI
+$[-0.020, 0.116]$; open-question ROUGE-L: $p=0.9642$, 95\% CI
+$[-0.032, 0.033]$; $n=451$). A secondary finding from a sweep over
+$k \in \{1,3,5,10\}$ showed accuracy peaking at $k=1$ and declining
+monotonically as retrieval depth increased, suggesting that excess
+retrieved evidence can dilute rather than reinforce a base model's
+answer. These results indicate retrieval augmentation shows a
+promising but unconfirmed effect on medical VQA at this scale, with
+retrieval depth mattering at least as much as the presence of
+retrieval itself.

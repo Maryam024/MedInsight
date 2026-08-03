@@ -1,0 +1,87 @@
+This work uses two openly licensed, non-credentialed datasets, each serving
+a distinct role in the pipeline: one as the corpus the retriever searches
+over, the other as the held-out benchmark the downstream task is graded on.
+Table~\ref{tab:datasets} summarizes both; full preprocessing detail is in
+the project's \texttt{docs/dataset.md}.
+
+\begin{table}[t]
+\centering
+\caption{Datasets used in this work.}
+\label{tab:datasets}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Role & Dataset & License \\
+\midrule
+Retrieval corpus & ROCOv2~\cite{ruckert2024rocov2} & CC BY-NC-SA 4.0 \\
+Evaluation benchmark & VQA-RAD~\cite{lau2018vqarad} & CC0 (public domain) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{ROCOv2: Retrieval Corpus}
+
+ROCOv2~\cite{ruckert2024rocov2} pairs approximately 90{,}000 radiological
+images with captions extracted from the PMC Open Access subset, spanning
+multiple modalities (CT, MRI, X-ray, and ultrasound). Each caption is a
+clinically written figure caption from published biomedical literature,
+not a crowd-sourced description. This corpus plays the role of the
+non-parametric evidence store in the retrieval-augmented condition
+(Section~\ref{sec:method}): at inference time, the query image is embedded
+and used to retrieve the most visually similar corpus entries, whose
+captions are then supplied to the model as evidence.
+
+One caveat carried through to the retrieval design: ROCOv2 captions are
+figure captions, not full clinical reports, and occasionally reference
+comparative or positional context (e.g., a prior figure panel) that is not
+recoverable from the isolated retrieved image. Section~\ref{sec:discussion}
+returns to whether this measurably affects retrieved-evidence quality.
+
+\subsection{VQA-RAD: Evaluation Benchmark}
+
+VQA-RAD~\cite{lau2018vqarad} contains 3{,}515 question-answer pairs over 315
+radiology images, with questions written directly by clinicians rather than
+crowdworkers, covering both closed-ended (yes/no-style) and open-ended
+free-text questions across CT, MRI, and X-ray studies. Using a benchmark
+disjoint from the retrieval corpus is deliberate: it evaluates the
+downstream VQA task independently of the retriever's own source corpus,
+rather than measuring the model's ability to recover an answer key it was
+given evidence from.
+
+\subsection{Splitting and Preprocessing}
+
+VQA-RAD is evaluated on its own official held-out test split (451
+examples), rather than a further internal re-split of the training
+portion, so that results are directly comparable to other published
+VQA-RAD baselines that use the same standard split. The official
+training portion (1{,}793 examples) is further divided 90/10 into
+train/validation internally, stratified by answer type (closed
+vs.\ open) where that label is available. The Hugging Face mirror of
+VQA-RAD used here (\texttt{flaviagiammarino/vqa-rad}) does not expose
+an explicit closed/open answer-type field; this label is instead
+recovered from the answer text itself, treating a normalized answer of
+exactly ``yes'' or ``no'' as closed-ended and every other answer as
+open-ended. This is an approximation of the original VQA-RAD
+annotation -- a small number of closed-ended, non-yes/no questions
+(e.g.\ ``which side is the lesion on?'') will be mislabeled
+open-ended -- and is noted as a limitation in
+Section~\ref{sec:limitations}. ROCOv2 is not split, since it serves
+only as the full retrieval corpus, not a held-out evaluation set.
+Images are resized to $224\times224$ and normalized with standard
+ImageNet statistics, noted here as a documented default rather than a
+finding specific to medical images, which have different intensity
+distributions than natural images; captions are truncated to 128
+whitespace-delimited tokens before being written to the retrieval
+manifest.
+
+\subsection{Why Not MIMIC-CXR}
+
+MIMIC-CXR is the chest radiograph dataset most commonly used in published
+medical VLM work. It was not used here because it requires a credentialed
+PhysioNet access process (CITI training and institutional affiliation
+review) with a latency of one to several weeks, which would have delayed
+every downstream milestone of a timeline-constrained project. ROCOv2 and
+VQA-RAD require no credentialing and no protected health information
+handling, allowing the full pipeline to be built and validated end to end
+first. Extending the retrieval corpus to include MIMIC-CXR, once
+credentialed access is obtained, is identified as future work
+(Section~\ref{sec:limitations}).

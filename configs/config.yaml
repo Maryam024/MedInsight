@@ -1,0 +1,30 @@
+project:
+  name: "MedInsight"
+  version: "0.1.0"
+  seed: 42                     # fixed for reproducibility across all experiments
+  description: >
+    Evaluating Retrieval-Augmented Vision-Language Models for
+    Evidence-Grounded Medical Image Understanding.
+
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  data_external: "data/external"
+  experiment_logs: "experiments/logs"
+  checkpoints: "checkpoints"
+
+logging:
+  level: "INFO"
+  log_to_file: true
+  log_dir: "experiments/logs"
+  log_filename: "medinsight.log"
+
+device:
+  use_gpu_if_available: true
+  # If no GPU is detected at runtime, config_loader falls back to CPU
+  # and logs a warning — no silent failure.
+
+wandb:
+  enabled: false
+  project_name: "medinsight"
+  entity: null

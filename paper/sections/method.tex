@@ -1,0 +1,60 @@
+The pipeline consists of three components, built and tested independently:
+a baseline vision-language model with no retrieved evidence, an image
+retriever over the ROCOv2 corpus, and a retrieval-augmented model that
+composes the first two. All three share code where possible, which is the
+design choice that makes the baseline-vs-RAG comparison in
+Section~\ref{sec:results} valid rather than an apples-to-oranges
+benchmark.
+
+\subsection{Baseline Vision-Language Model}
+
+The baseline condition uses a pretrained, general-domain vision-language
+model checkpoint (a BLIP-2-family model~\cite{li2023blip2}, configured in
+\texttt{configs/model\_config.yaml}) with no modification and no retrieved
+context: it is given an image and a question, and generates a free-text
+answer directly. This is deliberately the simplest possible condition ---
+it isolates the effect of retrieval augmentation from any effect of
+domain-specific fine-tuning, which prior work has already studied
+separately~\cite{li2023llavamed}.
+
+\subsection{Retriever}
+
+The retriever embeds every ROCOv2 image with a CLIP
+image encoder~\cite{radford2021clip}, L2-normalizes the resulting vectors,
+and indexes them with a FAISS~\cite{johnson2019faiss} flat inner-product
+index --- exact (non-approximate) nearest-neighbor search, appropriate at
+ROCOv2's corpus scale ($\sim$90K vectors) without requiring an approximate
+index such as IVF or HNSW. At query time, the same CLIP encoder embeds the
+query image, and the index returns the $k$ most visually similar corpus
+entries by cosine similarity (equivalent to inner product over normalized
+vectors), together with their captions and similarity scores.
+
+\subsection{Retrieval-Augmented Model}
+
+The retrieval-augmented condition composes the baseline model and the
+retriever rather than reimplementing generation: it retrieves the top-$k$
+similar corpus captions for the query image, constructs a prompt that
+prepends those captions (truncated to a fixed word budget) before the
+original question, and passes that prompt through the \emph{same}
+underlying generation call the baseline condition uses. Concretely, both
+conditions call one shared code path
+(\texttt{BaselineVLM.generate\_from\_prompt} in the released code) with the
+same tokenization, decoding parameters (deterministic decoding; see
+Section~\ref{sec:experimental_setup}), and post-processing --- the only
+difference between the two experimental conditions is the text of the
+prompt itself. If no evidence is retrieved for a given query (e.g.\ a
+cold or empty index), the system falls back to the bare question with no
+evidence block, i.e.\ to baseline behavior, rather than emitting a
+malformed prompt.
+
+\subsection{Design Rationale: Shared Generation Code}
+
+This shared-code-path design is the paper's central methodological
+safeguard. A comparison between two differently-implemented pipelines ---
+even ones intended to differ only in ``using retrieval or not'' --- risks
+confounding the retrieval effect with incidental implementation
+differences (e.g.\ different tokenization, different truncation behavior,
+different decoding temperature). By construction, that confound is
+eliminated here: the two conditions differ in exactly one respect, the
+prompt text, which is what licenses attributing any measured accuracy
+difference (Section~\ref{sec:results}) to retrieval augmentation itself.

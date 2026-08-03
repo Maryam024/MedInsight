@@ -1,0 +1,25 @@
+retrieval_corpus:
+  name: "ROCOv2"
+  description: "Radiology Objects in COntext v2 — image-caption pairs used to build the retrieval knowledge base."
+  source_url: "https://huggingface.co/datasets/eltorio/ROCOv2-radiology"
+  license: "CC BY-NC-SA 4.0"
+  modalities: ["CT", "MRI", "X-ray", "Ultrasound"]
+  local_path: "data/raw/rocov2"
+
+evaluation_set:
+  name: "VQA-RAD"
+  description: "Clinician-generated visual question answering pairs on radiology images, used to evaluate grounded answer generation."
+  source_url: "https://huggingface.co/datasets/flaviagiammarino/vqa-rad"
+  license: "CC0 (Public Domain)"
+  local_path: "data/raw/vqa_rad"
+
+preprocessing:
+  image_size: [224, 224]
+  normalize_mean: [0.485, 0.456, 0.406]   # ImageNet stats (baseline; revisit for medical domain shift in Milestone 4)
+  normalize_std: [0.229, 0.224, 0.225]
+  max_caption_length: 128
+
+splits:
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1

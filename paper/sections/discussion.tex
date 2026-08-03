@@ -1,0 +1,65 @@
+% This section is written after Section~\ref{sec:results} has real numbers
+% and docs/experiments_findings.md's error-analysis categories have been
+% manually reviewed.
+
+This section addresses three questions directly from the results in
+Section~\ref{sec:results} and the error-analysis output in
+\texttt{docs/experiments\_findings.md}.
+
+\subsection{Does retrieval help overall, and is the effect reliable?}
+
+At the default retrieval depth ($k=5$), the retrieval-augmented condition
+outperformed the baseline on every metric: closed-question accuracy rose
+from 43.0\% to 47.8\% (+4.8 points), overall exact match from 26.8\% to
+29.5\% (+2.7 points), with smaller gains on BLEU-4 and ROUGE-L. However,
+the paired bootstrap significance test on the closed-question delta
+returned $p = 0.1848$ with a 95\% confidence interval of $[-0.020, 0.116]$,
+and the open-question ROUGE-L delta returned $p = 0.9642$ with a
+confidence interval of $[-0.032, 0.033]$ -- both spanning zero. With
+$n = 451$ test examples (251 closed, 200 open), we cannot reject the null
+hypothesis that either improvement arose by chance, though the
+closed-question result is the more suggestive of the two. The honest
+reading is that retrieval augmentation produced a consistent,
+direction-positive effect across all reported metrics, but the test set
+is too small, and the effect too modest, to confirm it is real rather
+than sampling noise.
+
+\subsection{Why does performance peak at $k=1$ rather than at higher retrieval depths?}
+
+The top-$k$ sweep (Table~\ref{tab:topk-sweep}, Section~\ref{sec:results}) shows a
+monotonic decline in closed-question accuracy as $k$ increases from 1 to 10:
+accuracy falls from 55.0\% at $k=1$ to 46.6\% at $k=10$, while
+open-question BLEU-4 and ROUGE-L do not show as clean a monotonic trend
+(ROUGE-L is in fact highest at $k=10$, 0.1516). The clearest and most
+interpretable effect in the sweep is on closed-question accuracy. A
+plausible explanation is evidence dilution: mean top-1 retrieval
+similarity was high (0.971), indicating the single most similar corpus
+image is usually a strong match, but each additional retrieved caption
+beyond the first introduces topically related but increasingly less
+relevant text into the prompt. For a base (not instruction-tuned)
+checkpoint such as \texttt{blip2-opt-2.7b}, a longer, noisier evidence
+block may compete with the actual question for the model's limited
+effective context rather than reinforcing it. An equally plausible
+alternative explanation, not distinguishable from evidence dilution using
+this experiment alone, is that the retriever itself is question-agnostic:
+because it embeds only the query image (Section~\ref{sec:method}) and never
+the question text, only the single most visually similar corpus entry is
+reliably relevant to what is actually being asked, and captions beyond the
+first are increasingly likely to be irrelevant to the specific question
+rather than merely diluted -- a distinction future work with
+question-aware retrieval (Section~\ref{sec:limitations}) could disentangle.
+
+\subsection{What do the improved/regressed error categories show?}
+
+Of the 451 test examples, retrieval changed the outcome for a similar
+number of cases in each direction: 54 examples improved (baseline wrong,
+RAG correct) versus 44 that regressed (baseline correct, RAG wrong), a
+near-even split that is consistent with the modest, non-significant
+aggregate delta reported above. The dominant category, however, was
+\emph{both wrong} (260 of 451 examples, 58\%), with only 93 examples
+(21\%) answered correctly by both conditions. This indicates that the
+baseline VLM's zero-shot capability on radiology imagery, not the
+presence or absence of retrieved evidence, is the primary bottleneck on
+this benchmark: retrieval can only change the outcome on the minority of
+examples where the underlying model was close to a correct answer in the
+first place.

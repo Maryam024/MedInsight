@@ -1,0 +1,79 @@
+% MedInsight — IEEE conference paper source.
+%
+% Compile with a standard IEEEtran-capable LaTeX toolchain (e.g. Overleaf's
+% "IEEE Conference" template, or locally: pdflatex + bibtex + pdflatex x2).
+% This project does not vendor IEEEtran.cls — it is a standard class
+% available on any TeX distribution or on Overleaf.
+%
+% Structure: each section lives in its own file under sections/ and is
+% \input here, so scripts/generate_paper_results.py (Milestone 8 tooling)
+% can regenerate sections/results.tex alone without touching this file or
+% any other section — the same "regenerate, don't hand-edit" discipline
+% used for docs/eda_findings.md and docs/experiments_findings.md.
+
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{url}
+
+\begin{document}
+
+\title{MedInsight: Evaluating Retrieval-Augmented Vision-Language Models \\ for Evidence-Grounded Medical Image Understanding}
+
+\author{
+  \IEEEauthorblockN{Maryam Zaheer}
+  \IEEEauthorblockA{Department of Computer Science \\
+  University of Engineering and Technology (UET), Lahore \\
+  2023cs175@student.uet.edu.pk}
+}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+retrieval-augmented generation, vision-language models, medical visual question answering, radiology, evaluation
+\end{IEEEkeywords}
+
+\section{Introduction}
+\input{sections/introduction}
+
+\section{Related Work}
+\input{sections/related_work}
+
+\section{Datasets}
+\label{sec:datasets}
+\input{sections/datasets}
+
+\section{Method}
+\label{sec:method}
+\input{sections/method}
+
+\section{Experimental Setup}
+\label{sec:experimental_setup}
+\input{sections/experimental_setup}
+
+\section{Results}
+\label{sec:results}
+\input{sections/results}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{sections/discussion}
+
+\section{Limitations}
+\label{sec:limitations}
+\input{sections/limitations}
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+\input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
