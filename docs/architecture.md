@@ -1,6 +1,6 @@
 # System Architecture
 
-## Retrieval-Augmented Pipeline
+## Retrieval Augmented Pipeline
 
 ```text
                          ┌─────────────────────┐
